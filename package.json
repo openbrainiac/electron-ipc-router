@@ -1,5 +1,5 @@
 {
-  "name": "electron-ipc-router",
+  "name": "@open_brainiac/electron-ipc-router",
   "version": "1.0.0-beta",
   "description": "",
   "main": "index.js",
@@ -27,5 +27,6 @@
   },
   "peerDependencies": {
     "electron": "^9.0.0"
-  }
+  },
+  "devDependencies": {}
 }

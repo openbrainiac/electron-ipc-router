@@ -52,7 +52,7 @@ function server(routes, port){
     http.createServer((request, response) => {
         const { headers, method, url } = request;
         if(method !== "POST") return sendError(response, "method must be POST");
-        const funcName = url.split("/")[1]
+        const funcName = url.split("/").splice(1).join("/")
         const cb = routes[funcName]
 
         if(!cb || typeof cb !== 'function') return sendError(response, "function does not exist");
@@ -93,7 +93,7 @@ function server(routes, port){
             });
     })
       .listen(port,function() {
-          console.log('\x1b[32m%s\x1b[0m', 'IPC server running on port ' + port);
+          console.log('\x1b[32m%s\x1b[0m', 'electron-ipc-router server running on port ' + port);
       })
       .on('error', console.log);
 }

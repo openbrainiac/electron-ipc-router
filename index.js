@@ -52,7 +52,7 @@ function server(routes, port){
     http.createServer((request, response) => {
         const { headers, method, url } = request;
         if(method !== "POST") return sendError(response, "method must be POST");
-        const funcName = url.split("/").splice(1).join("/")
+        const funcName = url.substring(1)
         const cb = routes[funcName]
 
         if(!cb || typeof cb !== 'function') return sendError(response, "function does not exist");

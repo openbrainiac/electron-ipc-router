@@ -1,6 +1,6 @@
 {
   "name": "@open_brainiac/electron-ipc-router",
-  "version": "1.0.1-beta.3",
+  "version": "1.0.1-beta.4",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -17,7 +17,7 @@
     "manager"
   ],
   "author": "Opensource Brainiac",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/openbrainiac/electron-ipc-router/issues"
   },

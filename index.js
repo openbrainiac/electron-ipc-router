@@ -1,12 +1,15 @@
 const { ipcMain, ipcRenderer } = require('electron')
 const http = require('http');
 
-function subscriber(routes, port){
+function subscriber({routes,server, port}){
     if(!routes || typeof routes !== 'object') throw new Error("invalid argument for subscriber, expected Object");
     Object.entries(routes).forEach(elem => {
         let route = elem[0];
         let callback = elem[1];
-        if (!route || !callback || typeof callback !== 'function') return;
+        if (!route || !callback || typeof callback !== 'function') {
+            console.error(route," is not a function")
+            return;
+        }
         ipcMain.on(route, (event, ...args) => {
             let result
             try {
@@ -16,7 +19,7 @@ function subscriber(routes, port){
                 console.error(err)
                 event.reply(`${route}-error`, err)
             }
-            if(!(result instanceof Promise)) event.reply(`${route}-response`, result)
+            if(!(result instanceof Promise)) event.returnValue =  result
 
             else result
                     .then(response => {
@@ -29,10 +32,13 @@ function subscriber(routes, port){
 
         });
     });
-    if(port) server(routes, port);
+    if(server && !port) throw new Error("port number not found");
+    else if(server && port) server(routes, port);
 }
 
 function ipc(route, ...args) {
+    let syncResponse = ipcRenderer.sendSync(route, ...args)
+    if(syncResponse) return syncResponse
      return new Promise(((resolve, reject) => {
          ipcRenderer.once(`${route}-response`, (event, response) => {
              ipcRenderer.removeAllListeners(`${route}-error`);

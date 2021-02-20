@@ -15,7 +15,7 @@ import {subscriber} from "@open_brainiac/electron-ipc-router"
 
 const routes = {
   foo: function(a,b){
-    return a+b+c;
+    return a+b;
   },
   bar: async function(){
     // getData is an async function, like getting data from DB
@@ -24,25 +24,30 @@ const routes = {
   }
 }
 
-subscriber(routes)
+subscriber({routes})
 ```
 
 ```html
 <!--  Renderer process -->
 <script>
     import {ipc} from "@open_brainiac/electron-ipc-router"
-    ipc("foo", 1,2).then(res=>console.log(res)) // => prints: 3
+    console.log(ipc("foo", 1,2))// => prints: 3
     ipc("bar").then(res=>console.log(res)) // => prints the data variable
 </script>
 ```
 ### Debugging server
-Passing a port number to the subscriber function starts a node server that exposes the functions of the routes
+Using the electron-ipc-router you can start a node server that exposes the functions of the routes
 object.
 
 **Note:** this functionality should be used only for debugging the routes and not for production.
 
 ```javascript
-  subscriber(routes, 3000)
+  let options = {
+    routes,
+    server: true,
+    port: 3000,
+  }
+  subscriber(options)
 ```
 
 ```bash

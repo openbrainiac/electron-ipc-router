@@ -36,7 +36,7 @@ function subscriber({routes,server, port}){
     else if(server && port) server(routes, port);
 }
 
-function ipc(route, id, ...args) {
+function ipc(route, ...args) {
     let syncResponse = ipcRenderer.sendSync(route, ...args)
     if(syncResponse) return syncResponse
      return new Promise(((resolve, reject) => {

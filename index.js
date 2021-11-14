@@ -10,24 +10,24 @@ function subscriber({routes,server, port}){
             console.error(route," is not a function")
             return;
         }
-        ipcMain.on(route, (event, ...args) => {
+        ipcMain.on(route, (event, id, ...args) => {
             let result
             try {
                 result = callback(...args);
             }
             catch (err){
                 console.error(err)
-                event.reply(`${route}-error`, err)
+                event.reply(`${route}-${id}-error`, err)
             }
             if(!(result instanceof Promise)) event.returnValue =  result
 
             else result
                     .then(response => {
-                        event.reply(`${route}-response`, response);
+                        event.reply(`${route}-${id}-response`, response);
                     })
                     .catch(e => {
                         console.error(e);
-                        event.reply(`${route}-error`, e);
+                        event.reply(`${route}-${id}-error`, e);
                     });
 
         });
@@ -40,17 +40,18 @@ function ipc(route, ...args) {
     let syncResponse = ipcRenderer.sendSync(route, ...args)
     if(syncResponse) return syncResponse
      return new Promise(((resolve, reject) => {
-         ipcRenderer.once(`${route}-response`, (event, response) => {
-             ipcRenderer.removeAllListeners(`${route}-error`);
+         let id = Math.random()
+         ipcRenderer.once(`${route}-${id}-response`, (event, response) => {
+             ipcRenderer.removeAllListeners(`${route}-${id}-error`);
             resolve(response);
         });
 
-         ipcRenderer.once(`${route}-error`, (event, error) => {
-             ipcRenderer.removeAllListeners(`${route}-response`);
+         ipcRenderer.once(`${route}-${id}-error`, (event, error) => {
+             ipcRenderer.removeAllListeners(`${route}-${id}-response`);
             reject(error);
         });
 
-         ipcRenderer.send(route, ...args);
+         ipcRenderer.send(route, id, ...args);
     }))
 }
 
